@@ -4,6 +4,234 @@ import enum
 import math
 
 # Define some colors
+
+WATER = (68, 183, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+YELLOW = (255, 255, 63)
+
+
+
+WALL = 0
+PATH = 1
+
+colors = {WALL : WATER,
+          PATH : WATER}
+
+map = [
+    [WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL],
+    [WALL, PATH, PATH, PATH, PATH, PATH, PATH, WALL, PATH, PATH, PATH, WALL, PATH, PATH, PATH, PATH, PATH, PATH, WALL],
+    [WALL, PATH, WALL, PATH, WALL, WALL, PATH, WALL, PATH, PATH, PATH, WALL, PATH, WALL, WALL, PATH, WALL, PATH, WALL],
+    [WALL, PATH, WALL, PATH, PATH, PATH, PATH, PATH, PATH, PATH, PATH, PATH, PATH, PATH, PATH, PATH, WALL, PATH, WALL],
+    [WALL, PATH, WALL, PATH, PATH, PATH, PATH, PATH, PATH, WALL, PATH, PATH, PATH, PATH, PATH, PATH, WALL, PATH, WALL],
+    [WALL, PATH, PATH, PATH, PATH, WALL, WALL, PATH, PATH, WALL, PATH, PATH, WALL, WALL, PATH, PATH, PATH, PATH, WALL],
+    [WALL, PATH, WALL, PATH, PATH, PATH, PATH, PATH, PATH, WALL, PATH, PATH, PATH, PATH, PATH, PATH, WALL, PATH, WALL],
+    [WALL, PATH, WALL, PATH, PATH, PATH, PATH, PATH, PATH, PATH, PATH, PATH, PATH, PATH, PATH, PATH, WALL, PATH, WALL],
+    [WALL, PATH, WALL, PATH, WALL, WALL, PATH, WALL, PATH, PATH, PATH, WALL, PATH, WALL, WALL, PATH, WALL, PATH, WALL],
+    [WALL, PATH, PATH, PATH, PATH, PATH, PATH, WALL, PATH, PATH, PATH, WALL, PATH, PATH, PATH, PATH, PATH, PATH, WALL],
+    [WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL]
+    ]
+
+TILESIZE = 100
+
+MAPWIDTH = 19
+MAPHEIGHT = 11
+
+
+pg.init()
+
+# Set the width and height of the screen (width,height)
+DISPLAYSURF = pg.display.set_mode((MAPWIDTH*TILESIZE, MAPHEIGHT*TILESIZE))
+
+wall_list = []
+for row in range(MAPHEIGHT):
+        for column in range(MAPWIDTH):
+            if colors[map[row][column]] == BLACK:
+                wall_list.append(pg.draw.rect(DISPLAYSURF, colors[map[row][column]], (column*TILESIZE, row*TILESIZE, TILESIZE, TILESIZE)))
+
+#Label window
+pg.display.set_caption("Tank Game")
+
+# Loop until the user clicks the close button.
+done = False
+
+# Used to manage how fast the screen updates
+clock = pg.time.Clock()
+
+
+class Boat():
+    #Random color for surface fill
+    BOO = (8,0,0)
+
+    def __init__(self, color1, color2, color3, x, y, up, down, right, left, clockwise, counterclockwise):
+        self.color1 = color1
+        self.color2 = color2
+        self.color3 = color3
+        self.size = 40
+        self.start_x = x
+        self.start_y = y
+        self.x = self.start_x
+        self.y = self.start_y
+        self.turret_theta = 0
+        self.surf = pg.Surface((60,60))
+        self.score = 0
+
+        # Rectangle marking tank boundry
+        self.rect = pg.Rect(self.x-20, self.y - 20, self.size, self.size)
+
+        #controls
+        self.up =  up
+        self.down = down
+        self.right = right
+        self.left = left
+        self.clockwise = clockwise
+        self.counterclockwise = counterclockwise
+
+        #Collision detection rectangles
+        self.left_collider = pg.Rect(self.x-23, self.y-20, 4, 40)
+        self.right_collider = pg.Rect(self.x+20, self.y-20, 4, 40)
+        self.top_collider = pg.Rect(self.x-20, self.y-23, 40, 4)
+        self.bottom_collider = pg.Rect(self.x-20, self.y+20, 40, 4)
+
+
+        self.surf.fill(Boat.BOO)
+        # Makes fill color transparent
+        self.surf.set_colorkey(Boat.BOO)
+
+
+    def draw_boat(self, DISPLAYSURF):
+        #Tank body
+        pg.draw.rect(DISPLAYSURF, self.color1,(self.x-20, self.y - 20, self.size, self.size), 0 )
+        #Turrent body
+        pg.draw.circle(DISPLAYSURF, self.color2, [self.x, self.y], 18, 0)
+        #Turret
+        pg.draw.rect(self.surf, self.color3, [32,25, 28, 10], 0)
+
+
+    def rotate(self, surface, rect, angle):
+        # Rotate about the center
+        new_image = pg.transform.rotate(surface, angle)
+        # Get a new rect with the center of the old rect.
+        rect = new_image.get_rect(center=rect.center)
+        return new_image, rect
+
+
+    def turret_motion(self):
+        #get centerd rectangle
+        rect = self.surf.get_rect(center = (self.x,self.y))
+        #return turret location
+        image, rect = self.rotate(self.surf, rect, self.turret_theta)
+        #copy turret to screen
+        DISPLAYSURF.blit(image, rect)
+
+
+    def motion(self, boat, wall_list, other_boat):
+
+            # User pushes down on a key
+            #self.x += math.sin(math.radians(self.turret_theta))
+            #self.x += math.cos(math.radians(self.turret_theta))
+            if pg.key.get_pressed()[self.right] and (CollisionStatus.RIGHT not in collision_detection(boat, wall_list, other_boat)):
+                self.x += 3
+            if pg.key.get_pressed()[self.left] and (CollisionStatus.LEFT not in collision_detection(boat, wall_list, other_boat)):
+                self.x += -3
+
+            if pg.key.get_pressed()[self.up] and (CollisionStatus.TOP not in collision_detection(boat, wall_list, other_boat)):
+                self.y += -3
+            if pg.key.get_pressed()[self.down] and (CollisionStatus.BOTTOM not in collision_detection(boat, wall_list, other_boat)):
+                self.y += 3
+
+            if pg.key.get_pressed()[self.clockwise]:
+                self.turret_theta += -5
+            if pg.key.get_pressed()[self.counterclockwise]:
+                self.turret_theta += 5
+
+
+    def update_state(self):
+        self.rect = pg.Rect(self.x-20, self.y - 20, self.size, self.size)
+        self.left_collider = pg.Rect(self.x-23, self.y-20, 4, 40)
+        self.right_collider = pg.Rect(self.x+20, self.y-20, 4, 40)
+        self.top_collider = pg.Rect(self.x-20, self.y-23, 40, 4)
+        self.bottom_collider = pg.Rect(self.x-20, self.y+20, 40, 4)
+
+
+    def create_boat(self, DISPLAYSURF, wall_list, other_boat):
+        self.draw_boat(DISPLAYSURF)
+        self.motion(self, wall_list, other_boat)
+        self.turret_motion()
+        self.update_state()
+
+class CollisionStatus(enum.Enum):
+
+    LEFT = 2
+    RIGHT = 3
+    TOP = 4
+    BOTTOM = 5
+
+
+def collision_detection(boat, wall_list, other_boat):
+    collisions = []
+    if boat.left_collider.collidelist(wall_list+other_boat) != -1:
+        collisions.append(CollisionStatus.LEFT)
+    if boat.right_collider.collidelist(wall_list+other_boat) != -1:
+        collisions.append(CollisionStatus.RIGHT)
+    if boat.top_collider.collidelist(wall_list+other_boat) != -1:
+        collisions.append(CollisionStatus.TOP)
+    if boat.bottom_collider.collidelist(wall_list+other_boat) != -1:
+        collisions.append(CollisionStatus.BOTTOM)
+    return collisions
+
+
+
+
+
+
+
+yellow_boat = Boat(YELLOW, YELLOW, YELLOW, 1650, 950, pg.K_UP, pg.K_DOWN, pg.K_RIGHT, pg.K_LEFT, pg.K_COMMA, pg.K_m)
+blue_boat = Boat(BLUE,BLUE, BLUE, 250, 150, pg.K_r, pg.K_f, pg.K_g, pg.K_d, pg.K_1, pg.K_2)
+
+
+
+#print(pg.font.get_fonts())  This is a list of fonts we can use including chilanka
+
+
+# -------- Main Program Loop -----------
+while not done:
+    # --- Event Processing
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+            done = True
+
+
+    for row in range(MAPHEIGHT):
+        for column in range(MAPWIDTH):
+            pg.draw.rect(DISPLAYSURF, colors[map[row][column]], (column*TILESIZE, row*TILESIZE, TILESIZE, TILESIZE))
+
+
+    
+    blue_boat.create_boat(DISPLAYSURF,wall_list, [yellow_boat.rect])
+    yellow_boat.create_boat(DISPLAYSURF, wall_list, [blue_boat.rect])
+    
+
+    # Go ahead and update the screen with what we've drawn.
+    pg.display.flip()
+
+    # Used to manage how fast the screen updates
+    clock = pg.time.Clock()
+    # Limit frames per second
+    clock.tick(60)
+
+# Close the window and quit.
+pg.quit()
+
+
+'''
+import pygame as pg, sys
+from pygame.locals import *
+import enum
+import math
+
+# Define some colors
 CAMOGREEN = (108, 137, 13)
 RICHGREEN = (50, 137, 13)
 LUSHGREEN = (0, 158, 26)
@@ -305,3 +533,4 @@ while not done:
 
 # Close the window and quit.
 pg.quit()
+'''
