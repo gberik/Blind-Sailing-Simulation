@@ -18,8 +18,8 @@ WATER = (68, 183, 255)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 63)
 
-SCREENWIDTH=2000
-SCREENHEIGHT=1200
+SCREENWIDTH=1850
+SCREENHEIGHT=1025
 
 size = (SCREENWIDTH, SCREENHEIGHT)
 screen = pygame.display.set_mode(size)
@@ -28,8 +28,9 @@ pygame.display.set_caption("Sailing Simulation")
 #Wind-Text Properties
 #Wind
 font = pygame.font.Font(None, 52)
-text = font.render("Wind Direction", 1, WHITE)
+text = font.render("Wind", 1, WHITE)
 wind = pygame.image.load("images/WindArrow.png")
+wind = pygame.transform.scale(wind, (200, 120))
 
 #This will be a list that will contain all the sprites we intend to use in our game.
 all_sprites_list = pygame.sprite.Group()
@@ -55,14 +56,16 @@ while carryOn:
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
-            Boat1.moveLeft(5)
+            Boat1.moveLeft(1)
         if keys[pygame.K_RIGHT]:
-            Boat1.moveRight(5)
+            Boat1.moveRight(1)
         if keys[pygame.K_UP]:
-            Boat1.moveUp(5)
+            Boat1.moveUp(1)
         if keys[pygame.K_DOWN]:
-            Boat1.moveDown(5)
-
+            Boat1.moveDown(1)
+        if keys[pygame.K_COMMA]:
+            #Boat1.rot_center(5)
+            print(type(Boat1.rot_center(5)))
         #Game Logic
         all_sprites_list.update()
 
@@ -70,13 +73,13 @@ while carryOn:
         screen.fill(WATER)
 
         #Draw The Buoys
-        pygame.draw.circle(screen, RED, [1000,300],30, 0)
-        pygame.draw.circle(screen, RED, [666,900],30, 0)
-        pygame.draw.circle(screen, RED, [1333,900],30, 0)
+        pygame.draw.circle(screen, RED, [1600,312],15, 0)
+        pygame.draw.circle(screen, RED, [330,512],15, 0)
+        pygame.draw.circle(screen, RED, [1600,712],15, 0)
 
         #Wind - Text
-        screen.blit(text, (50,50))
-        screen.blit(wind, (50,100))
+        screen.blit(text, (65,455))
+        screen.blit(wind, (10,452))
 
 
 
