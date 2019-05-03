@@ -34,9 +34,8 @@ wind = pygame.image.load("images/WindArrow.png")
 #This will be a list that will contain all the sprites we intend to use in our game.
 all_sprites_list = pygame.sprite.Group()
 
-Boat1 = Boat(BLUE, 20, 30)
-Boat1.rect.x = 200
-Boat1.rect.y = 300
+Boat1 = Boat((700, 400))
+
 
 # Add the car to the list of objects
 all_sprites_list.add(Boat1)
@@ -55,13 +54,13 @@ while carryOn:
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
-            Boat1.moveLeft(5)
+            Boat1.moveLeft(1)
         if keys[pygame.K_RIGHT]:
-            Boat1.moveRight(5)
+            Boat1.moveRight(1)
         if keys[pygame.K_UP]:
-            Boat1.moveUp(5)
+            Boat1.moveUp(1)
         if keys[pygame.K_DOWN]:
-            Boat1.moveDown(5)
+            Boat1.moveDown(1)
         if keys[pygame.K_COMMA]:
             Boat1.rotate_right()
         if keys[pygame.K_l]:
