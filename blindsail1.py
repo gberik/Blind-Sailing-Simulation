@@ -43,6 +43,7 @@ all_sprites_list.add(Boat1)
 #Allowing the user to close the window...
 carryOn = True
 clock=pygame.time.Clock()
+currentBuoy = 0
 
 while carryOn:
         for event in pygame.event.get():
@@ -51,8 +52,9 @@ while carryOn:
             elif event.type==pygame.KEYDOWN:
                 if event.key==pygame.K_x: #Pressing the x Key will quit the game
                      carryOn=False
-
+        #Boat1.distance()
         keys = pygame.key.get_pressed()
+        #keys2 = pygame.KEYUP()
         if keys[pygame.K_LEFT]:
             Boat1.moveLeft(1)
         if keys[pygame.K_RIGHT]:
@@ -64,6 +66,7 @@ while carryOn:
         if keys[pygame.K_COMMA]:
             Boat1.rotate_right()
         if keys[pygame.K_l]:
+            keys[pygame.K_l] == False
             Boat1.rotate_left()
 
         #Game Logic
@@ -72,10 +75,21 @@ while carryOn:
         #Drawing on Screen
         screen.fill(WATER)
 
+        BuoyPos = [1000, 300, 666, 900, 1333, 900]
+        
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_b:
+                if currentBuoy<4:
+                    currentBuoy += 2
+                else:
+                    currentBuoy  = 0
+                    
+                print(currentBuoy)
+                    
         #Draw The Buoys
-        pygame.draw.circle(screen, RED, [1000,300],30, 0)
-        pygame.draw.circle(screen, RED, [666,900],30, 0)
-        pygame.draw.circle(screen, RED, [1333,900],30, 0)
+        pygame.draw.circle(screen, RED, [BuoyPos[0],BuoyPos[1]],30, 0)
+        pygame.draw.circle(screen, RED, [BuoyPos[2],BuoyPos[3]],30, 0)
+        pygame.draw.circle(screen, RED, [BuoyPos[4],BuoyPos[5]],30, 0)
 
         #Wind - Text
         screen.blit(text, (50,50))
