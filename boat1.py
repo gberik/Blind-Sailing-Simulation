@@ -3,6 +3,7 @@
 
 import pygame
 from pygame.math import Vector2
+import math
 
 WHITE = (255, 255, 255)
 YELLOW = (255, 255, 63)
@@ -31,6 +32,8 @@ class Boat(pygame.sprite.Sprite):
         self.offset = Vector2(0, 0)
         self.angle = 0
 
+        #pygame.draw.rect(picture, WHITE, 0, width = 0)
+
 
     def rotate(self):
         self.image = pygame.transform.rotozoom(self.rotated_image, -self.angle, 1)
@@ -54,9 +57,17 @@ class Boat(pygame.sprite.Sprite):
         self.pos.x -= pixels
 
     def moveUp(self, pixels):
-        self.rect.y -= pixels
-        self.pos.y -= pixels
-
+        #self.rect.y -= pixels
+        self.pos.y -= math.cos(math.radians(self.angle))*pixels
+        self.pos.x += math.sin(math.radians(self.angle))*pixels
+        
+        print(self.pos.x, self.pos.y)
+        self.rect.y -= math.cos(math.radians(self.angle))*pixels
+        self.rect.x += math.sin(math.radians(self.angle))*pixels
+        self.rect = self.image.get_rect(center=self.pos)
+        
     def moveDown(self, pixels):
         self.rect.y += pixels
         self.pos.y += pixels
+    #def distance(self):
+        
