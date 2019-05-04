@@ -3,11 +3,11 @@
 # casey & sander you can do next on the website to reach the other parts
 
 import pygame, random
-#Let's import the Boat Class
 from boat1 import Boat
+
 pygame.init()
 
-#colors
+#Colors
 GREEN = (20, 255, 140)
 GREY = (210, 210 ,210)
 WHITE = (255, 255, 255)
@@ -18,33 +18,31 @@ WATER = (68, 183, 255)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 63)
 
+#Screen Properties
 SCREENWIDTH=2000
 SCREENHEIGHT=1200
-
 size = (SCREENWIDTH, SCREENHEIGHT)
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Sailing Simulation")
 
-#Wind-Text Properties
-#Wind
-font = pygame.font.Font(None, 52)
-text = font.render("Wind Direction", 1, WHITE)
-wind = pygame.image.load("images/WindArrow.png")
-
-#This will be a list that will contain all the sprites we intend to use in our game.
+#Make a sprites list and add Boat1
 all_sprites_list = pygame.sprite.Group()
-
 Boat1 = Boat((700, 400))
-
-
-# Add the car to the list of objects
 all_sprites_list.add(Boat1)
+
+#HUD - Text on Screen
+font = pygame.font.Font(None, 52)
+wind_direction = font.render("Wind Direction", 1, WHITE)
+wind_arrow = pygame.image.load("images/WindArrow.png")
+
+
 
 #Allowing the user to close the window...
 carryOn = True
 clock=pygame.time.Clock()
 currentBuoy = 0
 
+#Main Loop
 while carryOn:
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
@@ -76,24 +74,30 @@ while carryOn:
         screen.fill(WATER)
 
         BuoyPos = [1000, 300, 666, 900, 1333, 900]
-        
+
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_b:
                 if currentBuoy<4:
                     currentBuoy += 2
                 else:
                     currentBuoy  = 0
-                    
+
                 print(currentBuoy)
-                    
+
         #Draw The Buoys
         pygame.draw.circle(screen, RED, [BuoyPos[0],BuoyPos[1]],30, 0)
         pygame.draw.circle(screen, RED, [BuoyPos[2],BuoyPos[3]],30, 0)
         pygame.draw.circle(screen, RED, [BuoyPos[4],BuoyPos[5]],30, 0)
 
-        #Wind - Text
-        screen.blit(text, (50,50))
-        screen.blit(wind, (50,100))
+        #Print HUD
+        pygame.draw.rect(screen,RED,(1500,800,2000,1200))
+        angle = str(Boat1.angle)
+        boat_angle = font.render("Boat angle: " + angle, 1, WHITE)
+        screen.blit(wind_direction, (50,50))
+        screen.blit(wind_arrow, (50,100))
+        screen.blit(boat_angle, (1650,1100))
+        pygame.draw.rect(screen,RED,(0,800,500,1200))
+
 
 
 
