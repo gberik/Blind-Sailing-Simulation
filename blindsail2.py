@@ -47,10 +47,11 @@ carryOn = True
 clock=pygame.time.Clock()
 currentBuoy = 0
 
+
 def distance():
-    distance = math.sqrt(((Boat1.pos.x-BuoyPos[currentBuoy])**2)+(Boat1.pos.y-BuoyPos[currentBuoy+1])**2)
-    print(round(distance))
-    return round(distance)
+    distance = round(math.sqrt(((Boat1.pos.x-BuoyPos[currentBuoy])**2)+(Boat1.pos.y-BuoyPos[currentBuoy+1])**2)/200)
+    print(distance)
+    return distance
 
 def ClockHeading():
     BoatCartx = Boat1.pos.x
@@ -58,10 +59,44 @@ def ClockHeading():
     BuoyCartx = BuoyPos[currentBuoy]
     BuoyCarty = -(BuoyPos[currentBuoy+1] - SCREENHEIGHT)
     v = (BuoyCartx - BoatCartx, BuoyCarty - BoatCarty)
-    u = (math.sin(Boat1.angle), math.cos(Boat1.angle))
-    Angle2Buoy = math.degrees(math.acos(numpy.dot(u, v)/(numpy.linalg.norm(u)*numpy.linalg.norm(v))))
-    print(Angle2Buoy) 
-    return Angle2Buoy
+    u = (math.sin(math.radians(Boat1.angle)), math.cos(math.radians(Boat1.angle)))
+    if numpy.cross(u,v) <= 0:
+        if (numpy.dot(u, v)/(numpy.linalg.norm(u))) >= 0:
+            Angle2Buoy = round(math.degrees(math.acos(numpy.dot(u, v)/(numpy.linalg.norm(u)*numpy.linalg.norm(v)))))
+        else:
+            Angle2Buoy = round(math.degrees(math.acos(numpy.dot(u, v)/(numpy.linalg.norm(u)*numpy.linalg.norm(v)))))
+    elif numpy.cross(u,v) > 0:
+        if (numpy.dot(u, v)/(numpy.linalg.norm(u))) >= 0:
+            Angle2Buoy = round(360 - math.degrees(math.acos(numpy.dot(u, v)/(numpy.linalg.norm(u)*numpy.linalg.norm(v)))))
+        else:
+            Angle2Buoy = round(360 - math.degrees(math.acos(numpy.dot(u, v)/(numpy.linalg.norm(u)*numpy.linalg.norm(v)))))
+     
+    if Angle2Buoy > 345 and Angle2Buoy <= 360 or Angle2Buoy >= 0 and Angle2Buoy < 15:
+        clockFace = 12
+    elif Angle2Buoy >= 15 and Angle2Buoy < 45:
+        clockFace = 1
+    elif Angle2Buoy >= 45 and Angle2Buoy < 75:
+        clockFace = 2
+    elif Angle2Buoy >= 75 and Angle2Buoy < 105:
+        clockFace = 3  
+    elif Angle2Buoy >= 105 and Angle2Buoy < 135:
+        clockFace = 4 
+    elif Angle2Buoy >= 135 and Angle2Buoy < 165:
+        clockFace = 5
+    elif Angle2Buoy >= 165 and Angle2Buoy < 195:
+        clockFace = 6
+    elif Angle2Buoy >= 195 and Angle2Buoy < 225:
+        clockFace = 7
+    elif Angle2Buoy >= 225 and Angle2Buoy < 255:
+        clockFace = 8
+    elif Angle2Buoy >= 255 and Angle2Buoy < 285:
+        clockFace = 9
+    elif Angle2Buoy >= 285 and Angle2Buoy < 315:
+        clockFace = 10
+    elif Angle2Buoy >= 315 and Angle2Buoy < 345:
+        clockFace = 11
+    print(clockFace)
+    return clockFace
 
 while carryOn:
         for event in pygame.event.get():
@@ -79,6 +114,7 @@ while carryOn:
                    
                     elif currentBuoy == 4:
                         currentBuoy = 0
+                        
                 if event.key == pygame.K_d:
                     print(distance)
                     ClockHeading()
@@ -109,7 +145,7 @@ while carryOn:
         screen.blit(wind, (50,100))
 
         distance = round(math.sqrt(((Boat1.pos.x-BuoyPos[currentBuoy])**2)+(Boat1.pos.y-BuoyPos[currentBuoy+1])**2))
-        if distance < 200:
+        if distance < 2:
             print('Warning')
         keys = pygame.key.get_pressed()
         
