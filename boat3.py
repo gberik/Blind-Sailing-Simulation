@@ -84,10 +84,3 @@ class Boat(pygame.sprite.Sprite):
             self.rect.y -= math.cos(math.radians(self.angle))*pixels
             self.rect.x += math.sin(math.radians(self.angle))*pixels
             self.rect = self.image.get_rect(center=self.pos)
-
-        #Stay in screen
-         if self.pos.x < 0 or self.pos.x > 1850:
-            self.reset_boat()
-
-         if self.pos.y < 0 or self.pos.y > 1100:
-            self.reset_boat()
