@@ -1,28 +1,38 @@
-# SOURCE FOR CODE AND KNOWLEDGE
-# https://www.101computing.net/getting-started-with-pygame/
+"""
+Project Name:
+Blind Sailing Simulation
+
+Authors:
+Galip Sina Berik
+Casey May
+Sander Miller
+
+
+Install the following packages to run:
+
+python3 -m pip install -U pygame --user
+pip install pydub
+pip install soundfile
+pip install ffmpy
+pip install gTTS
+sudo apt update
+sudo apt install ffmpeg
+pip install ffmpeg
+
+"""
 
 import math
-#python3 -m pip install -U pygame --user
 import pygame, random
 import numpy
 import time
 from boat3 import Boat
 import wave
-#pip install pydub
 from pydub import AudioSegment
-#pip install soundfile
 import soundfile
-#pip install ffmpy
 import ffmpy
-
-#pip install gTTS
 from gtts import gTTS
-
 import os
 import subprocess
-
-#sudo apt update
-#sudo apt install ffmpeg
 import ffmpeg
 
 
@@ -31,13 +41,9 @@ pygame.init()
 
 #Colors
 GREEN = (20, 255, 140)
-GREY = (210, 210 ,210)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
-PURPLE = (255, 0, 255)
-BLACK = ( 0, 0, 0)
 WATER = (68, 183, 255)
-BLUE = (0, 0, 255)
 YELLOW = (255, 255, 63)
 
 #Screen Properties
@@ -54,8 +60,12 @@ all_sprites_list.add(Boat1)
 
 #Initialize HUD: Text - Image on Screen
 font = pygame.font.Font(None, 52)
+small_font = pygame.font.Font(None, 42)
 wind_direction = font.render("Wind Direction", 1, WHITE)
-TTS_info = pygame.image.load("images/KeypressLegend.png")
+TTS_info = pygame.image.load("images/SimulationLegend.png")
+#Attribution for image below: http://www.pngall.com/?p=16293
+compass = pygame.image.load("images/Compass_Image.png")
+compass_scaled = pygame.transform.scale(compass, (250, 250))
 wind_arrow = pygame.image.load("images/WindArrow.png")
 help_button = font.render("Press H for Instructions", 1, WHITE)
 wind_warning = font.render("You can't sail directly into the wind", 1, WHITE)
@@ -66,8 +76,6 @@ off_screen_warning = font.render("Don't go off screen", 1, WHITE)
 info_status = 1
 currentBuoy = 0
 speech_speed = 0.9
-
-#Let's put a better comment - Allowing the user to close the window...
 carryOn = True
 clock=pygame.time.Clock()
 
@@ -80,7 +88,7 @@ def update_screen():
 
 #Define functions that restart the boat with the correct warnings
 def restart_boat_with_delay_hitted_buoy():
-    screen.blit(buoy_warning, (1100,100))
+    screen.blit(buoy_warning, (700,50))
     Boat1.reset_boat()
     all_sprites_list.update()
     all_sprites_list.draw(screen)
@@ -88,7 +96,7 @@ def restart_boat_with_delay_hitted_buoy():
     time.sleep(1)
 
 def restart_boat_with_delay_went_off_screen():
-    screen.blit(off_screen_warning, (1100,100))
+    screen.blit(off_screen_warning, (700,50))
     Boat1.reset_boat()
     all_sprites_list.update()
     all_sprites_list.draw(screen)
@@ -165,7 +173,7 @@ def get_clock_heading_sentence():
 def get_cardinal_direction():
 
     boat_angle = Boat1.angle
-    cardinal_direction = "The boat is heading "
+    cardinal_direction = "Boat heading "
 
     if 337.5 <= boat_angle <= 360 or 0 <= boat_angle < 22.5:
         cardinal_direction += "North"
@@ -334,35 +342,35 @@ while carryOn:
         #Stay in Screen
         if Boat1.pos.x < 0 or Boat1.pos.x > 1850:
            restart_boat_with_delay_went_off_screen()
-
-        if Boat1.pos.y < 0 or Boat1.pos.y > 1100:
+        if Boat1.pos.y < 0 or Boat1.pos.y > 1000:
            restart_boat_with_delay_went_off_screen()
 
 
-
-
-
-
-        
-
+        #Head Up Display Text and Images to Display
         #Display distance to buoy
         distance_to_buoy = get_distance_sentence()
-        distance_to_buoy_render = font.render(distance_to_buoy, 1, WHITE)
-        screen.blit(distance_to_buoy_render, (600,925))
+        distance_to_buoy_render = small_font.render(distance_to_buoy, 1, WHITE)
+        screen.blit(distance_to_buoy_render, (850,925))
 
         #Display clock heading to buoy
         buoy_clock_pos = get_clock_heading_sentence()
-        buoy_clock_pos_render = font.render(buoy_clock_pos, 1, WHITE)
-        screen.blit(buoy_clock_pos_render, (1000,925))
+        buoy_clock_pos_render = small_font.render(buoy_clock_pos, 1, WHITE)
+        screen.blit(buoy_clock_pos_render, (1200,925))
+
+        #Display boat heading as cardinal direction
+        boat_cardinal_heading = get_cardinal_direction()
+        boat_cardinal_heading_render = small_font.render(boat_cardinal_heading, 1, WHITE)
+        screen.blit(boat_cardinal_heading_render, (1500,925))
 
         #Display other images & text on screen
         screen.blit(wind_direction, (50,50))
         screen.blit(wind_arrow, (50,100))
         screen.blit(help_button, (50,925))
+        screen.blit(compass_scaled, (1575,25))
 
         #You can't sail towards wind warning display
         if Boat1.angle > 245 and Boat1.angle < 295:
-            screen.blit(wind_warning, (1100,100))
+            screen.blit(wind_warning, (700,50))
 
         #open and close the info menu
         if info_status%2 == 0:
