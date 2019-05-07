@@ -42,7 +42,7 @@ YELLOW = (255, 255, 63)
 
 #Screen Properties
 SCREENWIDTH=1850
-SCREENHEIGHT=1100
+SCREENHEIGHT=1000
 size = (SCREENWIDTH, SCREENHEIGHT)
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Sailing Simulation")
@@ -343,23 +343,22 @@ while carryOn:
 
 
 
-        #HUD Images & Text to display
-        pygame.draw.rect(screen,RED,(1350,925,1850,1100))
+        
 
         #Display distance to buoy
         distance_to_buoy = get_distance_sentence()
         distance_to_buoy_render = font.render(distance_to_buoy, 1, WHITE)
-        screen.blit(distance_to_buoy_render, (1375,950))
+        screen.blit(distance_to_buoy_render, (600,925))
 
         #Display clock heading to buoy
         buoy_clock_pos = get_clock_heading_sentence()
         buoy_clock_pos_render = font.render(buoy_clock_pos, 1, WHITE)
-        screen.blit(buoy_clock_pos_render, (1375,1025))
+        screen.blit(buoy_clock_pos_render, (1000,925))
 
         #Display other images & text on screen
         screen.blit(wind_direction, (50,50))
         screen.blit(wind_arrow, (50,100))
-        screen.blit(help_button, (50,1000))
+        screen.blit(help_button, (50,925))
 
         #You can't sail towards wind warning display
         if Boat1.angle > 245 and Boat1.angle < 295:
@@ -367,7 +366,7 @@ while carryOn:
 
         #open and close the info menu
         if info_status%2 == 0:
-            screen.blit(TTS_info, (0,700))
+            screen.blit(TTS_info, (0,600))
 
 
         #Move the Boat
