@@ -8,7 +8,7 @@ import time
 from boat3 import Boat
 pygame.init()
 
-#colors
+#Colors
 GREEN = (20, 255, 140)
 GREY = (210, 210 ,210)
 WHITE = (255, 255, 255)
@@ -47,7 +47,7 @@ currentBuoy = 0
 carryOn = True
 clock=pygame.time.Clock()
 
-#refreshes screen
+#Refreshes Screen
 def update_screen():
     all_sprites_list.draw(screen)
     pygame.display.flip()
@@ -73,8 +73,9 @@ def restart_boat_with_delay_went_off_screen():
 
 #Distance to current buoy
 def distance():
-    distance = round(math.sqrt(((Boat1.pos.x-BuoyPos[currentBuoy])**2)+(Boat1.pos.y-BuoyPos[currentBuoy+1])**2)/200)
-    #print(distance)
+    #200 pixels representsent a 4.2 meter boat
+    pixels_to_meters_rate = .021
+    distance = round(math.sqrt(((Boat1.pos.x-BuoyPos[currentBuoy])**2)+(Boat1.pos.y-BuoyPos[currentBuoy+1])**2)*pixels_to_meters_rate)
     return distance
 
 #Angle to current buoy
@@ -172,17 +173,24 @@ while carryOn:
         pygame.draw.circle(screen, GREEN, [BuoyPos[currentBuoy],BuoyPos[currentBuoy+1]],30, 0)
 
         #HUD Images & Text
-        pygame.draw.rect(screen,RED,(1450,950,1850,1100))
-        angle = str(Boat1.angle)
-        boat_angle = font.render("Boat angle: " + angle, 1, WHITE)
+        pygame.draw.rect(screen,RED,(1350,925,1850,1100))
+
+        str_distance = str(distance())
+        distance_to_buoy = font.render("Distance to Buoy: " + str_distance + " meters", 1, WHITE)
+        screen.blit(distance_to_buoy, (1375,950))
+
+        str_clockFace = str(ClockHeading())
+        buoy_clock_pos = font.render("Buoy Direction: " + str_clockFace + " o'clock", 1, WHITE)
+        screen.blit(buoy_clock_pos, (1375,1025))
+
+
         screen.blit(wind_direction, (50,50))
         screen.blit(wind_arrow, (50,100))
-        screen.blit(boat_angle, (1500,1000))
         screen.blit(help_button, (50,1000))
         if Boat1.angle > 245 and Boat1.angle < 295:
             screen.blit(wind_warning, (1100,100))
         if info_status%2 == 0:
-            screen.blit(TTS_info, (0,800))
+            screen.blit(TTS_info, (0,700))
 
 
         #Collision Detection with Buoys
@@ -194,7 +202,6 @@ while carryOn:
 
         elif (BuoyPos[4]-radius*1.5 < Boat1.pos.x < BuoyPos[4]+radius*1.5) and (BuoyPos[5]-radius*1.5 < Boat1.pos.y < BuoyPos[5]+radius*1.5):
             restart_boat_with_delay_hitted_buoy()
-
 
         #Stay in Screen
         if Boat1.pos.x < 0 or Boat1.pos.x > 1850:
@@ -217,6 +224,8 @@ while carryOn:
             Boat1.rotate_left()
 
         #Refresh Screen
+        distance()
+        ClockHeading()
         update_screen()
 
 
