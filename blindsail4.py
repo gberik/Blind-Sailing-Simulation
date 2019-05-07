@@ -65,7 +65,7 @@ off_screen_warning = font.render("Don't go off screen", 1, WHITE)
 #initialize global variables
 info_status = 1
 currentBuoy = 0
-speech_speed = 0.75
+speech_speed = 0.9
 
 #Let's put a better comment - Allowing the user to close the window...
 carryOn = True
@@ -203,6 +203,8 @@ def texty(num):
         snippet = "Slow speech mode"
     elif num == 7:
         snippet = "Fast speech mode"
+    elif num == 8:
+        snippet = "Very fast speech mode"
     return snippet
 
 
@@ -282,21 +284,25 @@ while carryOn:
                         currentBuoy = 0
 
                 if event.key==pygame.K_1:
-                    read_text(texty(1),1)
+                    read_text(texty(1),speech_speed)
                 if event.key==pygame.K_2:
-                    read_text(texty(2),1)
+                    read_text(texty(2),speech_speed)
                 if event.key==pygame.K_3:
-                    read_text(texty(3),1)
+                    read_text(texty(3),speech_speed)
                 if event.key==pygame.K_4:
-                    read_text(texty(4),1)
+                    read_text(texty(4),speech_speed)
                 if event.key==pygame.K_5:
-                    read_text(texty(5),1)
+                    read_text(texty(5),speech_speed)
                 if event.key==pygame.K_6:
-                    #speech_speed = 0.75
-                    read_text(texty(5),1)
+                    speech_speed = 0.9
+                    read_text(texty(6),speech_speed)
                 if event.key==pygame.K_7:
-                    #speech_speed = 1.25
-                    read_text(texty(5),1)
+                    speech_speed = 1.2
+                    read_text(texty(7),speech_speed)
+                if event.key==pygame.K_8:
+                    speech_speed = 1.4
+                    read_text(texty(8),speech_speed)
+
 
 
         #Update Sprites
@@ -363,11 +369,6 @@ while carryOn:
         if info_status%2 == 0:
             screen.blit(TTS_info, (0,700))
 
-
-
-        #Replace the sound here
-        #if distance < 2:
-            #print('Warning')
 
         #Move the Boat
         keys = pygame.key.get_pressed()
