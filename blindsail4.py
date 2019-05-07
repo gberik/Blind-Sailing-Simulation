@@ -6,6 +6,24 @@ import pygame, random
 import numpy
 import time
 from boat3 import Boat
+import wave
+from pydub import AudioSegment
+import soundfile
+import ffmpy
+
+
+# Import the required module for text
+# to speech conversion
+from gtts import gTTS
+
+# This module is imported so that we can
+# play the converted audio
+import os
+import subprocess
+import ffmpeg
+
+
+
 pygame.init()
 
 #Colors
@@ -128,6 +146,88 @@ def ClockHeading():
     #print(clockFace)
     return clockFace
 
+def texty(num):
+    #assigning what messages the text to speech should say when certain buttons are pressed
+    snippet = ''
+    if num == 1:
+        str_distance = str(distance())
+        textapp = 'meters away from the nearest buoy'
+        snippet = snippet + str_distance
+        snippet = snippet + textapp
+    elif num == 2:
+        str_clockFace = str(ClockHeading())
+        textapp = 'The buoy is at'
+        snippet = snippet + str_clockFace + "o'Clock"
+        snippet = textapp + snippet
+    elif num == 3:
+        textapp = 'The wind is blowing East'
+        snippet = textapp + snippet
+    elif num == 4:
+        currentBuoy = str(currentBuoy)
+        textapp = 'Advancing to buoy'
+        snippet = snippet + currentBuoy
+        snippet = textapp + snippet
+    return snippet
+
+def read_text(mytext, speed):
+    # The text that you want to convert to audio
+
+    #
+    # # Language in which you want to convert
+    language = 'en'
+    #
+    # # Passing the text and language to the engine,
+    # # here we have marked slow=False. Which tells
+    # # the module that the converted audio should
+    # # have a high speed
+    myobj = gTTS(text=mytext, lang=language, slow=False)
+    #
+    # # Saving the converted audio in a mp3 file named
+    # # welcome
+    myobj.save("welcomey.mp3")
+
+    subprocess.call(['ffmpeg', '-i', '/home/cmay/BlindSailing2019/welcomey.mp3','/home/cmay/newwelcomey.wav'])
+    #
+    CHANNELS = 1
+    swidth = 2
+    Change_RATE = 2
+
+
+
+
+
+
+    spf = wave.open('/home/cmay/newwelcomey.wav', 'rb')
+    RATE=spf.getframerate()
+    signal = spf.readframes(-1)
+    print(RATE)
+
+    wf = wave.open('/home/cmay/newwelcomey.wav', 'wb')
+    wf.setnchannels(CHANNELS)
+    wf.setsampwidth(swidth)
+    wf.setframerate(RATE*speed)
+    wf.writeframes(signal)
+    wf.close()
+
+
+
+    # Playing the converted file
+    os.system("aplay '/home/cmay/newwelcomey.wav'")
+
+    spf = wave.open('/home/cmay/newwelcomey.wav', 'rb')
+    RATE=spf.getframerate()
+    signal = spf.readframes(-1)
+    print(RATE)
+    wf = wave.open('/home/cmay/newwelcomey.wav', 'wb')
+    wf.setnchannels(CHANNELS)
+    wf.setsampwidth(swidth)
+    wf.setframerate(RATE*1/speed)
+    wf.writeframes(signal)
+    os.remove('/home/cmay/newwelcomey.wav')
+    wf.close()
+
+
+
 #Main Loop
 while carryOn:
         for event in pygame.event.get():
@@ -153,6 +253,19 @@ while carryOn:
 
                     elif currentBuoy == 4:
                         currentBuoy = 0
+
+                if event.key==pygame.K_1:
+                    read_text(texty(1),1)
+                if event.key==pygame.K_2:
+                    read_text(texty(2),1)
+                if event.key==pygame.K_3:
+                    read_text(texty(3),1)
+                if event.key==pygame.K_4:
+                    read_text(texty(4),1)
+                if event.key==pygame.K_5:
+                    read_text(texty(5),1)
+
+
 
                 #BETTER COMMENT HERE
                 if event.key == pygame.K_d:
