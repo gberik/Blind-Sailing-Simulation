@@ -1,7 +1,6 @@
 # SOURCE FOR CODE AND KNOWLEDGE
 # https://www.101computing.net/getting-started-with-pygame/
 
-
 import math
 #python3 -m pip install -U pygame --user
 import pygame, random
@@ -62,8 +61,11 @@ help_button = font.render("Press H for Instructions", 1, WHITE)
 wind_warning = font.render("You can't sail directly into the wind", 1, WHITE)
 buoy_warning = font.render("Don't hit the buoys!", 1, WHITE)
 off_screen_warning = font.render("Don't go off screen", 1, WHITE)
+
+#initialize global variables
 info_status = 1
 currentBuoy = 0
+speech_speed = 0.75
 
 #Let's put a better comment - Allowing the user to close the window...
 carryOn = True
@@ -99,6 +101,11 @@ def distance():
     pixels_to_meters_rate = .021
     distance = round(math.sqrt(((Boat1.pos.x-BuoyPos[currentBuoy])**2)+(Boat1.pos.y-BuoyPos[currentBuoy+1])**2)*pixels_to_meters_rate)
     return distance
+
+def get_distance_sentence():
+    str_distance = str(distance())
+    dist_sentence = "Buoy " + str_distance + " meters away"
+    return dist_sentence
 
 #Angle to current buoy
 def AngleHeading():
@@ -150,25 +157,52 @@ def ClockHeading():
     #print(clockFace)
     return clockFace
 
+def get_clock_heading_sentence():
+    str_clock_heading = str(ClockHeading())
+    heading_sentence = "Buoy at " + str_clock_heading + " o'clock"
+    return heading_sentence
+
+def get_cardinal_direction():
+
+    boat_angle = Boat1.angle
+    cardinal_direction = "The boat is heading "
+
+    if 337.5 <= boat_angle <= 360 or 0 <= boat_angle < 22.5:
+        cardinal_direction += "North"
+    elif 22.5 <= boat_angle < 67.5:
+        cardinal_direction += "North East"
+    elif 67.5 <= boat_angle < 112.5:
+        cardinal_direction += "East"
+    elif 112.5 <= boat_angle < 157.5:
+        cardinal_direction += "South East"
+    elif 157.5 <= boat_angle < 202.5:
+        cardinal_direction += "South"
+    elif 202.5 <= boat_angle < 247.5:
+        cardinal_direction += "South West"
+    elif 247.5 <= boat_angle < 292.5:
+        cardinal_direction += "West"
+    elif 292.5 <= boat_angle < 337.5:
+        cardinal_direction += "North West"
+    return cardinal_direction
+
+
 def texty(num):
     #assigning what messages the text to speech should say when certain buttons are pressed
     snippet = ''
     if num == 1:
-        str_distance = str(distance())
-        textapp = 'meters away from the nearest buoy'
-        snippet = snippet + str_distance
-        snippet = snippet + textapp
+        snippet = get_distance_sentence()
     elif num == 2:
-        str_clockFace = str(ClockHeading())
-        textapp = 'The buoy is at'
-        snippet = snippet + str_clockFace + "o'Clock"
-        snippet = textapp + snippet
+        snippet = get_clock_heading_sentence()
     elif num == 3:
-        textapp = 'The wind is blowing East'
-        snippet = textapp + snippet
+        snippet = 'The wind is blowing East'
     elif num == 4:
-        textapp = 'Advancing to next buoy'
-        snippet = textapp + snippet
+        snippet = get_cardinal_direction()
+    elif num == 5:
+        snippet = 'Advancing to next buoy'
+    elif num == 6:
+        snippet = "Slow speech mode"
+    elif num == 7:
+        snippet = "Fast speech mode"
     return snippet
 
 
@@ -190,7 +224,7 @@ def read_text(mytext, speed):
     myobj.save("welcomey.mp3")
 
     subprocess.call(['ffmpeg', '-i', 'welcomey.mp3','newwelcomey.wav'])
-    #
+
     CHANNELS = 1
     swidth = 2
     Change_RATE = 2
@@ -238,14 +272,12 @@ while carryOn:
                 if event.key==pygame.K_h:
                     info_status += 1
 
-                #Pressing b advances the current buoy
-                if event.key == pygame.K_4:
+                #Pressing 5 advances the current buoy
+                if event.key == pygame.K_5:
                     if currentBuoy == 0:
                         currentBuoy += 2
-
                     elif currentBuoy == 2:
                         currentBuoy += 2
-
                     elif currentBuoy == 4:
                         currentBuoy = 0
 
@@ -259,12 +291,19 @@ while carryOn:
                     read_text(texty(4),1)
                 if event.key==pygame.K_5:
                     read_text(texty(5),1)
-
+                if event.key==pygame.K_6:
+                    #speech_speed = 0.75
+                    read_text(texty(5),1)
+                if event.key==pygame.K_7:
+                    #speech_speed = 1.25
+                    read_text(texty(5),1)
 
 
         #Update Sprites
         all_sprites_list.update()
         screen.fill(WATER)
+
+
 
         #Draw The Buoys
         BuoyPos = [200, 500, 1500, 300, 1500, 800]
@@ -274,26 +313,6 @@ while carryOn:
         pygame.draw.circle(screen, RED, [BuoyPos[4],BuoyPos[5]],radius, 0)
         #Make Current Buoy Green
         pygame.draw.circle(screen, GREEN, [BuoyPos[currentBuoy],BuoyPos[currentBuoy+1]],30, 0)
-
-        #HUD Images & Text
-        pygame.draw.rect(screen,RED,(1350,925,1850,1100))
-
-        str_distance = str(distance())
-        distance_to_buoy = font.render("Distance to Buoy: " + str_distance + " meters", 1, WHITE)
-        screen.blit(distance_to_buoy, (1375,950))
-
-        str_clockFace = str(ClockHeading())
-        buoy_clock_pos = font.render("Buoy Direction: " + str_clockFace + " o'clock", 1, WHITE)
-        screen.blit(buoy_clock_pos, (1375,1025))
-
-
-        screen.blit(wind_direction, (50,50))
-        screen.blit(wind_arrow, (50,100))
-        screen.blit(help_button, (50,1000))
-        if Boat1.angle > 245 and Boat1.angle < 295:
-            screen.blit(wind_warning, (1100,100))
-        if info_status%2 == 0:
-            screen.blit(TTS_info, (0,700))
 
 
         #Collision Detection with Buoys
@@ -314,6 +333,38 @@ while carryOn:
            restart_boat_with_delay_went_off_screen()
 
 
+
+
+
+
+        #HUD Images & Text to display
+        pygame.draw.rect(screen,RED,(1350,925,1850,1100))
+
+        #Display distance to buoy
+        distance_to_buoy = get_distance_sentence()
+        distance_to_buoy_render = font.render(distance_to_buoy, 1, WHITE)
+        screen.blit(distance_to_buoy_render, (1375,950))
+
+        #Display clock heading to buoy
+        buoy_clock_pos = get_clock_heading_sentence()
+        buoy_clock_pos_render = font.render(buoy_clock_pos, 1, WHITE)
+        screen.blit(buoy_clock_pos_render, (1375,1025))
+
+        #Display other images & text on screen
+        screen.blit(wind_direction, (50,50))
+        screen.blit(wind_arrow, (50,100))
+        screen.blit(help_button, (50,1000))
+
+        #You can't sail towards wind warning display
+        if Boat1.angle > 245 and Boat1.angle < 295:
+            screen.blit(wind_warning, (1100,100))
+
+        #open and close the info menu
+        if info_status%2 == 0:
+            screen.blit(TTS_info, (0,700))
+
+
+
         #Replace the sound here
         #if distance < 2:
             #print('Warning')
@@ -327,8 +378,6 @@ while carryOn:
             Boat1.rotate_left()
 
         #Refresh Screen
-        distance()
-        ClockHeading()
         update_screen()
 
 
