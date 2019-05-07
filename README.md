@@ -1,12 +1,10 @@
 # BlindSailing2019
 
 ### SOFTDES README temporary location
-This is the code location for our update of the previous CabinComputer code! As soon as we make permanent changes to the repo, we will
-begin removing previous code from this location (there is another repo that contains previous code in case of catastrophe).
+Thanks for finding our Blind Sailing repository! In this repository you'll find all the code you need to run our blind sailing simulation, along with some of the code we used in the process of deciding on our final product, and some possible additional features. To protect yourself and others, please do not use this software on water if you are not an experienced sailor or accompanied by an instructor. Although our simulation is a good learning exercise, it will not teach you all of the necessary skills to operate a boat. Please seek additional education from certified sailing instructors before going on water. Instructions on how to install and run our program are in the website at the top of the repository! That being said, here is a quick little guide for the simulation:
 
-As of right now, we think that we may have found a few of the issues the 2018 code had, so we may be able to implement a better
-active time system, fix the TTS system, and fix the GPS location system without having to go back to the 2017 code. Our plan is to remove
-several classes entirely too (we don't want our boats to communicate with each other anymore, want to get polished code that allows boats
-to interact with buoys instead).
+# Objective: 
+Navigate the course using the arrow keys. Go around every buoy, and if you're up for a slight challenge, try and do it again without any sort of sense of sight. This will provide some context as to the functionality of our text to speech program.
 
-We have also decided to restart the code, using the current code for reference! This seems like the easiest way to simplify things, because there are so many nested classes that can't easily be unnested.
+# Rules
+While you are not heading into the wind, your boat should be moving without the need for you to press the forward button. If you collide too heavily with a buoy, you will reset. If you careen off of the map, you will be reset. Follow the instructions provided in the help menu to learn more specific controls (specifically always remember to switch buoys after passing your designated one, or else the information you're receiving will most likely be irrelevant). Most of all, have fun.
