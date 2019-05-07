@@ -1,25 +1,29 @@
 # SOURCE FOR CODE AND KNOWLEDGE
 # https://www.101computing.net/getting-started-with-pygame/
-# casey & sander you can do next on the website to reach the other parts
+
+
 import math
+#python3 -m pip install -U pygame --user
 import pygame, random
 import numpy
 import time
 from boat3 import Boat
 import wave
+#pip install pydub
 from pydub import AudioSegment
+#pip install soundfile
 import soundfile
+#pip install ffmpy
 import ffmpy
 
-
-# Import the required module for text
-# to speech conversion
+#pip install gTTS
 from gtts import gTTS
 
-# This module is imported so that we can
-# play the converted audio
 import os
 import subprocess
+
+#sudo apt update
+#sudo apt install ffmpeg
 import ffmpeg
 
 
@@ -163,11 +167,10 @@ def texty(num):
         textapp = 'The wind is blowing East'
         snippet = textapp + snippet
     elif num == 4:
-        currentBuoy = str(currentBuoy)
-        textapp = 'Advancing to buoy'
-        snippet = snippet + currentBuoy
+        textapp = 'Advancing to next buoy'
         snippet = textapp + snippet
     return snippet
+
 
 def read_text(mytext, speed):
     # The text that you want to convert to audio
@@ -186,46 +189,38 @@ def read_text(mytext, speed):
     # # welcome
     myobj.save("welcomey.mp3")
 
-    subprocess.call(['ffmpeg', '-i', '/home/cmay/BlindSailing2019/welcomey.mp3','/home/cmay/newwelcomey.wav'])
+    subprocess.call(['ffmpeg', '-i', 'welcomey.mp3','newwelcomey.wav'])
     #
     CHANNELS = 1
     swidth = 2
     Change_RATE = 2
 
-
-
-
-
-
-    spf = wave.open('/home/cmay/newwelcomey.wav', 'rb')
+    spf = wave.open('newwelcomey.wav', 'rb')
     RATE=spf.getframerate()
     signal = spf.readframes(-1)
     print(RATE)
 
-    wf = wave.open('/home/cmay/newwelcomey.wav', 'wb')
+    wf = wave.open('newwelcomey.wav', 'wb')
     wf.setnchannels(CHANNELS)
     wf.setsampwidth(swidth)
     wf.setframerate(RATE*speed)
     wf.writeframes(signal)
     wf.close()
 
-
-
     # Playing the converted file
-    os.system("aplay '/home/cmay/newwelcomey.wav'")
+    os.system("aplay 'newwelcomey.wav'")
 
-    spf = wave.open('/home/cmay/newwelcomey.wav', 'rb')
+    spf = wave.open('newwelcomey.wav', 'rb')
     RATE=spf.getframerate()
     signal = spf.readframes(-1)
     print(RATE)
-    wf = wave.open('/home/cmay/newwelcomey.wav', 'wb')
+    wf = wave.open('newwelcomey.wav', 'wb')
     wf.setnchannels(CHANNELS)
     wf.setsampwidth(swidth)
     wf.setframerate(RATE*1/speed)
     wf.writeframes(signal)
-    os.remove('/home/cmay/newwelcomey.wav')
+    os.remove('newwelcomey.wav')
     wf.close()
-
 
 
 #Main Loop
@@ -244,7 +239,7 @@ while carryOn:
                     info_status += 1
 
                 #Pressing b advances the current buoy
-                if event.key == pygame.K_b:
+                if event.key == pygame.K_4:
                     if currentBuoy == 0:
                         currentBuoy += 2
 
@@ -266,11 +261,6 @@ while carryOn:
                     read_text(texty(5),1)
 
 
-
-                #BETTER COMMENT HERE
-                if event.key == pygame.K_d:
-                    print(distance)
-                    ClockHeading()
 
         #Update Sprites
         all_sprites_list.update()
